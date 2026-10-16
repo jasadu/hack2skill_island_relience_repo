@@ -2,6 +2,7 @@
 # One-command deploy of the whole app: Cloud Run backend, then Firebase Hosting frontend, then the hosted check.
 # Usage:  PROJECT_ID=your-project ./deploy.sh            (REGION defaults to asia-southeast1)
 #         MIN_INSTANCES=1 PROJECT_ID=... ./deploy.sh     (use 1 during the evaluation window)
+#         SKIP_BACKEND=1 PROJECT_ID=... ./deploy.sh      (frontend and check only, e.g. after a Firebase login expiry)
 set -euo pipefail
 : "${PROJECT_ID:?set PROJECT_ID, e.g. PROJECT_ID=crested-polygon-511408-h9 ./deploy.sh}"
 REGION="${REGION:-asia-southeast1}"
@@ -10,6 +11,14 @@ DAILY_AI_BUDGET="${DAILY_AI_BUDGET:-600}"
 SA="island-api@${PROJECT_ID}.iam.gserviceaccount.com"
 cd "$(dirname "$0")"
 
+echo "== 0/4 Firebase login check (it expires in Cloud Shell)"
+if ! npx --yes firebase-tools projects:list --project "$PROJECT_ID" >/dev/null 2>&1; then
+  echo "Firebase login has expired. Run this, follow the link, paste the code, then run ./deploy.sh again:"
+  echo "  npx firebase-tools login --reauth --no-localhost"
+  exit 1
+fi
+
+if [ "${SKIP_BACKEND:-0}" = "1" ]; then echo "== 1-2/4 Skipping backend (SKIP_BACKEND=1)"; else
 echo "== 1/4 Backend tests (fake AI, no network)"
 (cd backend && pip install -q --break-system-packages -r requirements-dev.txt && FAKE_AI=1 STORE=memory CLIMATE_LIVE=0 python -m pytest -q)
 
@@ -18,6 +27,7 @@ echo "== 2/4 Deploy backend to Cloud Run (${REGION}, min instances ${MIN_INSTANC
   --service-account "$SA" --allow-unauthenticated --min-instances "$MIN_INSTANCES" --max-instances 3 \
   --set-env-vars "ASSESS_MODEL=gemini-3.8-flash,JUDGE_MODEL=gemini-3.6-flash,DAILY_AI_BUDGET=${DAILY_AI_BUDGET},PER_RUN_AI_CAP=25,PROMPT_VERSION=v1" \
   --set-secrets GEMINI_API_KEY=gemini-api-key:latest --quiet)
+fi
 
 echo "== 3/4 Build and deploy frontend to Firebase Hosting"
 (cd frontend && npm ci --silent && npm run build)
