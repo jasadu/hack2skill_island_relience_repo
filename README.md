@@ -2,7 +2,7 @@
 
 AI Builder Cup 2026 entry, theme **Sustainability & Social Impact**. An operations assistant for a **fictional** island whose drinking water depends on electricity. All data is synthetic.
 
-**Live demo:** `https://crested-polygon-511408-h9.web.app/` (replace before submitting) · **Video:** `https://youtu.be/7atzFh3NOBI` · **Deck:** `https://drive.google.com/file/d/1G8V3m6c0MKLRsh5jdSLIhSRSLgXI9Myb/view?usp=drive_link`
+**Live demo:** `https://crested-polygon-511408-h9.web.app/` · **Video:** `https://youtu.be/7atzFh3NOBI` · **Deck:** `https://drive.google.com/file/d/1G8V3m6c0MKLRsh5jdSLIhSRSLgXI9Myb/view?usp=drive_link`
 
 When power drops, the desalination plant slows, the reservoir drains and barangays run dry. The app spots that chain early, explains it with evidence, and helps an operator act before taps go dry.
 
