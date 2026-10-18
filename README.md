@@ -2,7 +2,7 @@
 
 AI Builder Cup 2026 entry, theme **Sustainability & Social Impact**. An operations assistant for a **fictional** island whose drinking water depends on electricity. All data is synthetic.
 
-**Live demo:** `https://YOUR_PROJECT_ID.web.app/` (replace before submitting) · **Video:** `ADD_LINK` · **Deck:** `ADD_LINK`
+**Live demo:** `https://crested-polygon-511408-h9.web.app/` (replace before submitting) · **Video:** `https://youtu.be/7atzFh3NOBI` · **Deck:** `https://drive.google.com/file/d/1G8V3m6c0MKLRsh5jdSLIhSRSLgXI9Myb/view?usp=drive_link`
 
 When power drops, the desalination plant slows, the reservoir drains and barangays run dry. The app spots that chain early, explains it with evidence, and helps an operator act before taps go dry.
 
@@ -68,7 +68,19 @@ The Gemini key lives only in Secret Manager and is injected into Cloud Run; it i
 
 ## Verification results
 
-Measured with `backend/scripts/eval_judge.py` on synthetic scenarios: `ADD_RESULTS_TABLE` (n = …). No claim is made about field accuracy.
+Measured with `backend/scripts/eval_judge.py`, real Gemini, synthetic power-instability incident, 16 Oct 2026. No claim is made about field accuracy.
+
+**Live pipeline (n = 20 runs, no cache).** 8 of 20 first drafts (40%) passed the code checks and the judge. 11 (55%) were flagged, repaired once and then passed. 1 (5%) ended UNVERIFIED because the judge step did not complete, and is labelled as such on screen. 19 of 20 final assessments were verified. Mean 3.1 model calls and 28.7 s per assessment (each call is its own request, under the 60 s Hosting limit).
+
+**Injected errors (n = 10 per type, starting from a draft that passes the code checks; the judge accepted that clean draft as a control).**
+
+| Corruption | Caught by code checks | Caught by the judge model | Missed |
+|---|---|---|---|
+| Invented evidence ID | 10 | 0 | 0 |
+| Altered number (clearly false value) | 10 | 0 | 0 |
+| Unsupported claim (for example "transformer failure confirmed") | 0 | 10 | 0 |
+
+Scope: three corruption types on one scenario. This measures whether the checks catch deliberate errors, not how correct the assessments are in general.
 
 ## Limitations
 
